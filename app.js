@@ -147,21 +147,20 @@ app.delete('/api/v1/tours/:id', deleteTour);
 app.patch('/api/v1/tours/:id', updateTours);
 */
 
+//routes
+const tourRouter = express.Router();
+const userRouter = express.Router();
+
+app.use('/api/v1/tours', tourRouter);
+app.use('/api/v1/users', userRouter);
+
 //using Tours.route
-app.route('/api/v1/tours').get(getAllTours).post(createTour);
-app
-  .route('/api/v1/tours/:id')
-  .get(getTourById)
-  .delete(deleteTour)
-  .patch(updateTours);
+tourRouter.route('/').get(getAllTours).post(createTour);
+tourRouter.route('/:id').get(getTourById).delete(deleteTour).patch(updateTours);
 
 //using user routes
-app.route('/api/v1/users').get(getAllUsers).post(createUser);
-app
-  .route('/api/v1/users/:id')
-  .get(getUserById)
-  .delete(deleteUser)
-  .patch(updateUsers);
+userRouter.route('/').get(getAllUsers).post(createUser);
+userRouter.route('/:id').get(getUserById).delete(deleteUser).patch(updateUsers);
 
 //server port
 const port = 3000;
