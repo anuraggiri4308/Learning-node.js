@@ -1,41 +1,17 @@
 const express = require('express');
-const app = express();
-
-const getAllUsers = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'Route is not yet implemented',
-  });
-};
-const getUserById = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'Route is not yet implemented',
-  });
-};
-const createUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'Route is not yet implemented',
-  });
-};
-const deleteUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'Route is not yet implemented',
-  });
-};
-const updateUsers = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'Route is not yet implemented',
-  });
-};
+const userController = require('../controllers/userController');
 
 //routes
 const router = express.Router();
 
-router.route('/').get(getAllUsers).post(createUser);
-router.route('/:id').get(getUserById).delete(deleteUser).patch(updateUsers);
+router
+  .route('/')
+  .get(userController.getAllUsers)
+  .post(userController.createUser);
+router
+  .route('/:id')
+  .get(userController.getUserById)
+  .delete(userController.deleteUser)
+  .patch(userController.updateUsers);
 
 module.exports = router;

@@ -18,8 +18,10 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/api/v1/tours', tourRouter);
-app.use('/api/v1/users', userRouter);
+//Mount routers
+app.use('/api/v1/tours', tourRouter); //here tourRouter is a middleware
+app.use('/api/v1/users', userRouter); //here userRouter is a middleware
+
 //server port
 const port = 3000;
 app.listen(port, () => {
