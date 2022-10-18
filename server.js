@@ -8,8 +8,22 @@ const DB = process.env.DATABASE.replace(
   process.env.DATABASE_PASSWORD
 );
 //use the object in the second parameter to depricate some of the warnings also mongoose.connect() returns a promise so we will have to resolve it with the then method
+/*
 mongoose
   .connect(DB, {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useFindAndModify: false
+  })
+  .then(con => {
+    // console.log(con.connections);
+    console.log('DB connection is successful');
+  });
+  */
+
+//local connection running now
+mongoose
+  .connect(process.env.DATABASE_LOCAL, {
     useNewUrlParser: true,
     useCreateIndex: true,
     useFindAndModify: false
@@ -39,6 +53,22 @@ const tourSchema = new mongoose.Schema({
 
 //creating mongoose model
 const Tour = mongoose.model('Tour', tourSchema);
+
+//creating document and testing model
+const testTour = new Tour({
+  name: 'The Forest Hiker',
+  rating: 4.7,
+  price: 497
+});
+
+testTour
+  .save()
+  .then(doc => {
+    console.log(doc);
+  })
+  .catch(err => {
+    console.log('Error 🧧', err);
+  });
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
