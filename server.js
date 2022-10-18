@@ -19,19 +19,26 @@ mongoose
     console.log('DB connection is successful');
   });
 
-//local database connection
-/*
-mongoose
-  .connect(process.env.DATABASE_LOCAL, {
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useFindAndModify: false
-  })
-  .then(con => {
-    // console.log(con.connections);
-    console.log('DB connection is successful');
-  });
-*/
+//creating MongooseSchema
+const tourSchema = new mongoose.Schema({
+  // name: String,
+  name: {
+    type: String,
+    required: [true, 'A tour must have a name'], //here second argument is the error string
+    unique: true
+  },
+  rating: {
+    type: Number,
+    default: 4.5
+  },
+  price: {
+    type: Number,
+    required: [true, 'A tour must have a price'] //required is a validator
+  }
+});
+
+//creating mongoose model
+const Tour = mongoose.model('Tour', tourSchema);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
