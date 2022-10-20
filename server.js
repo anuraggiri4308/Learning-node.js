@@ -33,43 +33,6 @@ mongoose
     console.log('DB connection is successful');
   });
 
-//creating MongooseSchema
-const tourSchema = new mongoose.Schema({
-  // name: String,
-  name: {
-    type: String,
-    required: [true, 'A tour must have a name'], //here second argument is the error string
-    unique: true
-  },
-  rating: {
-    type: Number,
-    default: 4.5
-  },
-  price: {
-    type: Number,
-    required: [true, 'A tour must have a price'] //required is a validator
-  }
-});
-
-//creating mongoose model
-const Tour = mongoose.model('Tour', tourSchema);
-
-//creating document and testing model
-const testTour = new Tour({
-  name: 'The Forest Hiker',
-  rating: 4.7,
-  price: 497
-});
-
-testTour
-  .save()
-  .then(doc => {
-    console.log(doc);
-  })
-  .catch(err => {
-    console.log('Error 🧧', err);
-  });
-
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`App running on port ${port}...`);
