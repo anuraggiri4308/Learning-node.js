@@ -1,6 +1,15 @@
 // const fs = require('fs');
 const Tour = require('./../models/tourModels');
 
+//ALIAS ROUTE
+//top tours (route has been defined in the tourRoute file) http://localhost:3000/api/v1/tours/top-5-cheap-tours
+exports.aliasTopTours = (req, res, next) => {
+  req.query.limit = '5';
+  req.query.sort = '-ratingsAverage,price';
+  req.query.fields = 'name,price,ratingAverage,summary,difficulty';
+  next();
+};
+
 //to import the data as a json file
 // const tours = JSON.parse(
 //   fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`)
