@@ -21,6 +21,8 @@ const Tour = require('./../models/tourModels');
 exports.getAllTours = async (req, res) => {
   try {
     //BUILDING QUERY
+
+    //FILTERING
     const queryObj = { ...req.query }; //we dont want to delete anything from original object so we are using destructuring same as object.assign
     const excludedFields = ['page', 'sort', 'limit', 'fields'];
     excludedFields.forEach(el => delete queryObj[el]);
@@ -34,17 +36,27 @@ exports.getAllTours = async (req, res) => {
 
     //using REQ.QUERY
     // const tours = await Tour.find(queryObj); //now if we want other query like sort and all then what waits do here is it will send the initial query after sometime so to resolve it we will add this to a query variable and await that query variable in the last see the code below.
-    const query = Tour.find(queryObj);
 
+    //ADVANCED FILTERING
+    let queryString = JSON.stringify(queryObj);
+    queryString = queryString.replace(
+      /\b(gte|gt|lte|lt)\b/g,
+      match => `$${match}`
+    );
+    //mongo db query for greater than {difficulty:'easy',duration:{$gte:5}}
+    //{ difficulty: 'easy' ,duration: { gte: '5' } }  //output from req.query if we give greater than in the query, only doller sign is missing in the duration value so we will add it
+    console.log(JSON.parse(queryString));
+
+    const query = Tour.find(JSON.parse(queryString));
+
+    //EXECUTE QUERY
+    const tours = await query;
     //2-mongoose method
     // const tours = await Tour.find()
     //   .where('duration')
     //   .equals(5)
     //   .where('difficulty')
     //   .equals('easy');
-
-    //EXECUTE QUERY
-    const tours = await query;
     res.status(200).json({
       status: 'success',
       requestedAt: req.requestTime,
@@ -135,3 +147,5 @@ exports.deleteTour = async (req, res) => {
     });
   }
 };
+
+//postman query http://localhost:3000/api/v1/tours?duration[gte]=5&difficulty=easy&price[lt]=1500
