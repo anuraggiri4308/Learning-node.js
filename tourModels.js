@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const slugify = require('slugify');
 //creating MongooseSchema
 const tourSchema = new mongoose.Schema(
   {
@@ -8,6 +9,7 @@ const tourSchema = new mongoose.Schema(
       required: [true, 'A tour must have a name'], //here second argument is the error string
       unique: true
     },
+    slug: String,
     duration: {
       type: Number,
       required: [true, 'A tour must have a duration']
@@ -52,6 +54,10 @@ const tourSchema = new mongoose.Schema(
       default: Date.now(),
       select: false
     },
+    secretTour: {
+      type: Boolean,
+      default: false
+    },
     startDates: [Date]
   },
   //to output virtual responsse
@@ -64,7 +70,41 @@ const tourSchema = new mongoose.Schema(
 tourSchema.virtual('durationWeeks').get(function() {
   return this.duration / 7;
 });
+//Mongoose middleware (pre will run before an actual event)
+//DOCUMENT MIDDLEWARE (it runs before .save() and .create() command)
+tourSchema.pre('save', function(next) {
+  // console.log(this); //this will point to currently processed document thats why it is called document middleware
+  this.slug = slugify(this.name, { lower: true });
+  next();
+});
+//post middleware do not have only access to next but it has access to document also
+//post middleware will be executed after all pre middleware is completed
+// tourSchema.post('save', function(doc, next) {
+//   console.log(doc); //doc is finished document
+//   next();
+// });
 
+//QUERY MIDDLEWARE - runs before and after certain query is executed
+//eg- middleware that will run before find query is executed (prefind hook)
+tourSchema.pre(/^find/, function(next) {
+  //   // tourSchema.pre('find', function(next) {
+  this.find({ secretTour: { $ne: true } });
+
+  this.start = Date.now();
+  next();
+});
+
+tourSchema.post(/^find/, function(docs, next) {
+  console.log(`Query took ${Date.now() - this.start} milliseconds!`);
+  next();
+});
+
+//AGGREGATION MIDDLEWARE
+tourSchema.pre('aggregate', function(next) {
+  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+  console.log(this);
+  next();
+});
 //creating mongoose model
 const Tour = mongoose.model('Tour', tourSchema);
 
