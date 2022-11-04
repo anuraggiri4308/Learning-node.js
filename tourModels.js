@@ -7,7 +7,9 @@ const tourSchema = new mongoose.Schema(
     name: {
       type: String,
       required: [true, 'A tour must have a name'], //here second argument is the error string
-      unique: true
+      unique: true,
+      maxlength: [40, 'A tour name must have less or equal than 40 characters'], //validator minlength and maxlength works only on string
+      minlength: [10, 'A tour name must have more or equal than 10 characters']
     },
     slug: String,
     duration: {
@@ -20,11 +22,18 @@ const tourSchema = new mongoose.Schema(
     },
     difficulty: {
       type: String,
-      required: [true, 'S tour must have a difficulty']
+      required: [true, 'S tour must have a difficulty'],
+      //enum is used to provide only values that we want(enum is only for strings)
+      enum: {
+        values: ['easy', 'medium', 'difficulty'],
+        message: 'Difficulty is either easy medium, medium or hard'
+      }
     },
     ratingAverage: {
       type: Number,
-      default: 4.5
+      default: 4.5,
+      min: [1, 'Rating must be above 1.0'],
+      max: [5, 'Rating must be below 5.0']
     },
     ratingQuantity: {
       type: Number,
