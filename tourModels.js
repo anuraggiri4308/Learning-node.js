@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
+const validator = require('validator'); //validator library on github for custom validation
 //creating MongooseSchema
 const tourSchema = new mongoose.Schema(
   {
@@ -10,6 +11,8 @@ const tourSchema = new mongoose.Schema(
       unique: true,
       maxlength: [40, 'A tour name must have less or equal than 40 characters'], //validator minlength and maxlength works only on string
       minlength: [10, 'A tour name must have more or equal than 10 characters']
+      // validate: [validator.isAlpha, 'Tour name must only contain characters']
+      //line no 3 (isAlpha is the method from validator library) COMMENTING THIS BECAUSE IT WILL GIVE ERROR WHEN WE HAVE SPACE IN THE NAME WHICH IS NOT USEFUL
     },
     slug: String,
     duration: {
@@ -43,7 +46,18 @@ const tourSchema = new mongoose.Schema(
       type: Number,
       required: [true, 'A tour must have a price'] //required is a validator
     },
-    priceDiscount: Number,
+    priceDiscount: {
+      type: Number,
+      validate: {
+        validator: function(val) {
+          //for custom validator we need a function that should return true or false (true means validation is correct and false means some issue with validation)
+
+          //this only points to current doc on NEW document creation
+          return val < this.price;
+        },
+        message: 'Discount price ({VALUE}) should be below the regular price' //({VALUE}) it has same value as val variable (it is not JavaScript code it is internal to mongoose)
+      }
+    },
     summary: {
       type: String,
       trim: true, //trim only be used with string and it will remove all the whitespace at the begining and the end
