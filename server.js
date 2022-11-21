@@ -1,5 +1,16 @@
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
+
+//uncaught exception
+//we kept it in top because if there is an issue then this exception will be caught first. (suppose we have console.log(x) in line 20 and x is not defined and this code is after that so the exception will not be caught so we kept it on top  )
+process.on('uncaughtException', err => {
+  console.log('UNCAUGHT EXCEPTION 🧧 Shutting down...');
+  console.log(err.name, err.message);
+  process.exit(1);
+  // server.close(() => {
+  //   process.exit(1); //during uncaught exception we need to exit the application, we may skip in the unhandled rejection but in uncaught exception it is mandatory
+  // });
+});
 dotenv.config({ path: './config.env' });
 const app = require('./app');
 
@@ -40,8 +51,8 @@ const server = app.listen(port, () => {
 
 //global unhandled rejections
 process.on('unhandledRejection', err => {
-  console.log(err.name, err.message);
   console.log('UNHANDLED REJECTION 🧧 Shutting down...');
+  console.log(err.name, err.message);
   //its not a good practice to close the application directly so we are closing the server first (server coming from line 37)
   server.close(() => {
     process.exit(1); //0 for success and  for unhandled exception})
