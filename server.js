@@ -1,8 +1,8 @@
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
+dotenv.config({ path: './config.env' });
 const app = require('./app');
 
-dotenv.config({ path: './config.env' });
 const DB = process.env.DATABASE.replace(
   '<PASSWORD>',
   process.env.DATABASE_PASSWORD
@@ -34,6 +34,16 @@ mongoose
   });
 
 const port = process.env.PORT || 3000;
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`App running on port ${port}...`);
+});
+
+//global unhandled rejections
+process.on('unhandledRejection', err => {
+  console.log(err.name, err.message);
+  console.log('UNHANDLED REJECTION 🧧 Shutting down...');
+  //its not a good practice to close the application directly so we are closing the server first (server coming from line 37)
+  server.close(() => {
+    process.exit(1); //0 for success and  for unhandled exception})
+  });
 });
